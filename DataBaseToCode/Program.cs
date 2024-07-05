@@ -1,8 +1,6 @@
-﻿
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
+﻿using System.Text;
 
-List<string> tableString = ReadFile("D:\\Trabajo\\Recurosos Informaticos\\DataBaseToCode\\DataBaseToCode\\DataBaseTable.txt");
+List<string> tableString = ReadFile("C:\\Git\\DataBaseToCode\\DataBaseToCode\\DataBaseTable.txt");
 
 Table table = CreateTable(tableString);
 Console.WriteLine();
@@ -28,7 +26,7 @@ Table CreateTable(List<string> tableString)
 
     foreach (string item in tableString)
     {
-        if(item.ToLower().Contains("create") || item.ToLower().Contains("alter"))
+        if (item.ToLower().Contains("create") || item.ToLower().Contains("alter"))
         {
 
             table.Name = item.Split(" ")[2];
@@ -41,7 +39,15 @@ Table CreateTable(List<string> tableString)
             Column column = new();
             column.Name = list[0];
             column.DbType = list[1];
-            //column.IsNull = list[2].ToLower() == "null" ? true : false;
+            if (list.Length > 2)
+            {
+                column.IsNull = false;
+            }
+            else
+            {
+                column.IsNull = true;
+            }
+            
             table.Columns.Add(column);
         }
 
@@ -96,12 +102,12 @@ public class Table
         sb.AppendLine("{");
         foreach (Column item in Columns)
         {
-            sb.AppendLine($"    public {item.Type}{(item.IsNull ? "?": string.Empty )} {item.Name} {{ get; set; }}");
+            sb.AppendLine($"    public {item.Type}{(item.IsNull ? "?" : string.Empty)} {item.Name} {{ get; set; }}");
         }
         sb.AppendLine("}");
 
 
-        return sb.ToString() ;
+        return sb.ToString();
     }
 
     public string CreateEntityLoad()
@@ -109,20 +115,20 @@ public class Table
         StringBuilder sb = new();
 
 
-        sb.Append($"private {Name} CargarEntida(OracleDataReader _dr)");
+        sb.Append($"private {Name} CargarEntidad(OracleDataReader _dr)");
         sb.AppendLine("{");
 
         sb.AppendLine($"    {Name} entidad = new {Name}();");
         sb.AppendLine();
         foreach (Column column in Columns)
         {
-            sb.AppendLine($"    entidad.{column.Name} = _dr.DataReaderTo{column.TypeCamelCase}()");
+            sb.AppendLine($"    entidad.{column.Name} = _dr.DataReaderTo{column.TypeCamelCase}(nameof({this.Name}.{column.Name}));");
         }
         sb.AppendLine();
         sb.AppendLine("    return entidad;");
 
-        sb.AppendLine("}");
-        
+        sb.AppendLine("}}}");
+
 
 
 
@@ -151,8 +157,8 @@ public class Table
         sb.AppendLine($@"
                 public class {this.Name}_Ora : AccesoADatosORA, I{this.Name}");
 
-                    sb.AppendLine("{");
-                    sb.AppendLine($@"
+        sb.AppendLine("{");
+        sb.AppendLine($@"
                     public {this.Name}_Ora() : base()
             ");
         sb.Append("{}");
@@ -168,20 +174,20 @@ public class Table
 
         sb2.Append("SELECT ");
 
-        int count= 0;
+        int count = 0;
 
         foreach (Column column in Columns)
         {
-            if(count == Columns.Count - 1)
-                sb2.Append($"{ column.Name} ");
+            if (count == Columns.Count - 1)
+                sb2.Append($"{column.Name} ");
             else
-                sb2.Append($"{ column.Name}, ");
-            
+                sb2.Append($"{column.Name}, ");
 
-            if(count % 5 == 0 && count != 0)
+
+            if (count % 5 == 0 && count != 0)
             {
                 sb2.AppendLine();
-                
+
             }
 
 
@@ -238,8 +244,54 @@ public class Table
     public string CreateBOClass()
     {
         StringBuilder sb = new();
+        sb.Append(@"
+        using ClasesFrigo.AccesoDatos;
+        using ClasesFrigo.Entidades;
+        using SistemaRI;
+        using System.Collections.Generic;
+        
+        namespace ClasesFrigo.Negocio
+        {
+");
 
-        sb.
+        sb.AppendLine($"  public class {this.Name}_BO : BO");
+        sb.Append("    {");
+
+        sb.AppendLine($@"private {this.Name}_Ora _interfaz => (({this.Name}_Ora)base._iBase);
+
+        public {this.Name}_BO() : base(new {this.Name}_Ora())
+
+");
+
+        sb.AppendLine("{}");
+
+        sb.AppendLine($@"
+            #region ""publicos""
+            public Validator<List<{this.Name}>> DevolverXCodigo(int codigo)
+");
+
+        sb.AppendLine(@"
+                {
+                    return _interfaz.DevolverXCodigo(codigo);
+                }
+"
+
+            );
+
+        sb.AppendLine($"     public Validator<List<{this.Name}>> DevolverTodos()");
+        sb.AppendLine(@" {
+
+            return _interfaz.DevolverTodos();
+   }
+#endregion
+    }
+
+
+}
+");
+
+
+
 
 
 
@@ -252,7 +304,9 @@ public class Column
 {
     public string Name { get; set; }
     public string DbType { get; set; }
-    public string Type { get
+    public string Type
+    {
+        get
         {
             if (!string.IsNullOrWhiteSpace(type))
                 return type;
@@ -298,13 +352,29 @@ public class Column
     {
         get
         {
-            if(string.IsNullOrWhiteSpace(type))
+            if (string.IsNullOrWhiteSpace(type))
                 return string.Empty;
 
             return type.Substring(0, 1).ToUpper() + type.Substring(1);
         }
     }
-    
+
+    public string TypeSearch
+    {
+        get
+        {
+            if (string.IsNullOrWhiteSpace(type))
+                return string.Empty;
+
+
+
+
+            return type.Substring(0, 1).ToUpper() + type.Substring(1);
+        }
+    }
+
+
+
     public bool IsNull { get; set; }
 
     public override string ToString()
