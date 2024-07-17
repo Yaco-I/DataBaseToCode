@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.8.34330.188
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataBaseToCode", "DataBaseToCode\DataBaseToCode.csproj", "{4C559BF7-2526-4C9B-93D8-F5E7C257B7E1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataBaseToCode", "DataBaseToCode\DataBaseToCode.csproj", "{4C559BF7-2526-4C9B-93D8-F5E7C257B7E1}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SistemaRI", "..\net.sistemari\SistemaRI\SistemaRI.csproj", "{1EE46994-A353-4EA5-905E-11B46EE162B2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{4C559BF7-2526-4C9B-93D8-F5E7C257B7E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4C559BF7-2526-4C9B-93D8-F5E7C257B7E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4C559BF7-2526-4C9B-93D8-F5E7C257B7E1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1EE46994-A353-4EA5-905E-11B46EE162B2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1EE46994-A353-4EA5-905E-11B46EE162B2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1EE46994-A353-4EA5-905E-11B46EE162B2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1EE46994-A353-4EA5-905E-11B46EE162B2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
