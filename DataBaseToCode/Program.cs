@@ -1,75 +1,156 @@
 ﻿using DataBaseToCode;
-using System.Text;
-
-List<string> tableString = LoadTxt.ReadFile("D:\\Trabajo\\Recurosos Informaticos\\DataBaseToCode\\DataBaseToCode\\DataBaseTable.txt");
-
-List<Table> tables = LoadTxt.CreateTables(tableString);
-var table = tables.FirstOrDefault(x => x.Name.ToUpper() == "ROMANEOS");
-Console.WriteLine();
-Console.WriteLine("=================================== Entidad ==========================================");
-Console.WriteLine();
-
-//Console.WriteLine(table.CreateTable());
+using Newtonsoft.Json;
+using SistemaRI.AccesoADatos;
 
 
-Console.WriteLine();
-Console.WriteLine("=================================== Entidad Busqueda ==========================================");
-Console.WriteLine();
+List<Table> tablesCorrectas = Load.JsonWithTables();
+List<Table> tablesIncorrectas = Load.LoadJsonTablasIncorrectas();
+string tablesName = "tropas";
+var table = tablesCorrectas.FirstOrDefault(x => x.Name.ToLower() == tablesName);
 
-//Console.WriteLine(table.CreateClassSearch());
-
-
-
-//Console.WriteLine(table.CreateEntityLoad());
-
-Console.WriteLine();
-Console.WriteLine("=================================== ORA ==========================================");
-Console.WriteLine();
-Console.WriteLine(table.CreateORAClass());
-
-Console.WriteLine();
-Console.WriteLine("=================================== BO ==========================================");
-Console.WriteLine();
-
-//Console.WriteLine(table.CreateBOClass());
-
-Console.WriteLine();
-Console.WriteLine("=================================== Controller ==========================================");
-Console.WriteLine();
-
-//Console.WriteLine(table.CreateController());
+var table2 = tablesIncorrectas.FirstOrDefault(x => x.Name.ToLower() == tablesName);
 
 
+Console.WriteLine(table);
 
-//List<string> ReadFile(string filePath)
+
+//TODO: MOVERLO A OTRO ARCHIVO
+
+//DatosConexion.Conexiones.Add(ContextosBDEnum.principal, "Data Source=10.10.0.84:1521/sanfranc;User Id=frigo;Password=frigo;Validate Connection=true;");
+//Table_ORA table_ORA = new Table_ORA();
+//List<string> conexiones = new List<string>()
 //{
-//    List<string> list = new();
-//    try
-//    {
-//        //string filePath = "D:\\Trabajo\\Recurosos Informaticos\\LicenseConvertExcelToDatabase\\LicenseConvertExcelToDatabase\\Administracion.txt";
+//    "Data Source=10.10.0.84:1521/sanfranc;User Id=frigo;Password=frigo;Validate Connection=true;",
 
-//        if (File.Exists(filePath))
-//        {
-//            using (StreamReader reader = new StreamReader(filePath))
-//            {
-//                string line;
+//    "Data Source=10.10.0.84:1521/bustos;User Id=frigo;Password=frigo;Validate Connection=true;",
 
-//                while ((line = reader.ReadLine()) != null)
-//                {
-//                    list.Add(line);
-//                }
-//            }
-//        }
-//        else
-//        {
-//            Console.WriteLine("The file is not exist.");
-//        }
-//    }
-//    catch (Exception ex)
+//    "Data Source=10.10.0.84:1521/morteros;User Id=frigo;Password=frigo;Validate Connection=true;",
+
+//    "Data Source=10.10.0.122:1521/novara;User Id=frigo;Password=frigo;Validate Connection=true;",
+
+//    "Data Source=10.10.0.211:1521/frideza;User Id=frigo;Password=frigo;Validate Connection=true;",
+
+//    "Data Source=10.10.0.211:1521/sudeste;User Id=frigo;Password=frigo;Validate Connection=true;",
+
+//};
+
+//List<List<Table>> basesDatos = new List<List<Table>>();
+//foreach (var conexionString in conexiones)
+//{
+//    IConexion conexion = new ConORAClient(conexionString, ContextosBDEnum.mant);
+
+//    var result = table_ORA.BuscarTodos(conexion);
+
+//    if (result.ok && result.obj is not null)
 //    {
-//        Console.WriteLine(ex.Message);
+//        basesDatos.Add(result.obj);
 //    }
-//    return list;
+//    else
+//    {
+
+//    }
 //}
 
 
+//List<Table> tablesJSON = FindCommonTables(basesDatos);
+//List<Table> tableNoEncontrada = FindDifTables(basesDatos);
+//var result2 = 123;
+//var Json = JsonConvert.SerializeObject(tablesJSON);
+//var Json2 = JsonConvert.SerializeObject(tableNoEncontrada);
+//Console.WriteLine(Json);
+//for (int i = 0; i < 20; i++)
+//{
+//    Console.WriteLine(123);
+//}
+
+//Console.WriteLine(Json2);
+
+
+//List<Table> FindCommonTables(List<List<Table>> databases)
+//{
+//    var tableGroups = databases
+//        .SelectMany(db => db)
+//        .GroupBy(t => t.Name)
+//        .Where(g => g.Count() == databases.Count);
+
+//    var commonTables = new List<Table>();
+//    foreach (var tableGroup in tableGroups)
+//    {
+//        var commonColumns = tableGroup
+//            .SelectMany(t => t.Columns)
+//            .GroupBy(c => c.Name)
+//            .Where(g => g.Count() == databases.Count)
+//            .Select(g =>
+//            {
+//                var firstColumn = g.First();
+//                return firstColumn;
+//            })
+//            .ToList();
+
+//        if (commonColumns.Any())
+//        {
+//            commonTables.Add(new Table
+//            {
+//                Name = tableGroup.Key,
+//                Columns = commonColumns
+//            });
+//        }
+//    }
+
+//    return commonTables;
+    
+//}
+
+//List<Table> FindDifTables(List<List<Table>> databases)
+//{
+//    var tableGroups = databases
+//        .SelectMany(db => db)
+//        .GroupBy(t => t.Name)
+//        .Where(g => g.Count() == databases.Count);
+
+//    var commonTables = new List<Table>();
+//    foreach (var tableGroup in tableGroups)
+//    {
+//        var commonColumns = tableGroup
+//            .SelectMany(t => t.Columns)
+//            .GroupBy(c => c.Name)
+//            .Where(g => g.Count() != databases.Count)
+//            .Select(g =>
+//            {
+//                var firstColumn = g.First();
+//                return firstColumn;
+//            })
+//            .ToList();
+
+//        if (commonColumns.Any())
+//        {
+//            commonTables.Add(new Table
+//            {
+//                Name = tableGroup.Key,
+//                Columns = commonColumns
+//            });
+//        }
+//    }
+
+//    return commonTables;
+//    foreach (var tableGroup in tableGroups)
+//    {
+//        var commonColumns = tableGroup
+//            .SelectMany(t => t.Columns.Select(c => c.Name))
+//            .GroupBy(c => c)
+//            .Where(g => g.Count() == databases.Count)
+//            .Select(g => new Column { Name = g.Key })
+//            .ToList();
+
+//        if (commonColumns.Any())
+//        {
+//            commonTables.Add(new Table
+//            {
+//                Name = tableGroup.Key,
+//                Columns = commonColumns
+//            });
+//        }
+//    }
+
+//    return commonTables;
+//}

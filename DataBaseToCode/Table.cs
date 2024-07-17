@@ -44,7 +44,7 @@ namespace ClasesFrigo.Entidades
             }
             else
                 sb.AppendLine($"    public {item.Type}{(item.Type != "string" ? "?" : string.Empty)} {item.Name} {{ get; set; }}");
-        
+
         }
         sb.AppendLine("}}");
 
@@ -249,9 +249,9 @@ namespace ClasesFrigo.Entidades
 
 
     public string CreateBOClass()
-{
-    StringBuilder sb = new();
-    sb.Append(@"
+    {
+        StringBuilder sb = new();
+        sb.Append(@"
         using ClasesFrigo.AccesoDatos;
         using ClasesFrigo.Entidades;
         using SistemaRI;
@@ -261,32 +261,32 @@ namespace ClasesFrigo.Entidades
         {
 ");
 
-    sb.AppendLine($"  public class {this.Name}_BO : BO");
-    sb.Append("    {");
+        sb.AppendLine($"  public class {this.Name}_BO : BO");
+        sb.Append("    {");
 
-    sb.AppendLine($@"private {this.Name}_Ora _interfaz => (({this.Name}_Ora)base._iBase);
+        sb.AppendLine($@"private {this.Name}_Ora _interfaz => (({this.Name}_Ora)base._iBase);
 
         public {this.Name}_BO() : base(new {this.Name}_Ora())
 
 ");
 
-    sb.AppendLine("{}");
+        sb.AppendLine("{}");
 
-    sb.AppendLine($@"
+        sb.AppendLine($@"
             #region ""publicos""
             public Validator<List<{this.Name}>> DevolverXCodigo(int codigo)
 ");
 
-    sb.AppendLine(@"
+        sb.AppendLine(@"
                 {
                     return _interfaz.DevolverXCodigo(codigo);
                 }
 "
 
-        );
+            );
 
-    sb.AppendLine($"     public Validator<List<{this.Name}>> DevolverTodos()");
-    sb.AppendLine(@" {
+        sb.AppendLine($"     public Validator<List<{this.Name}>> DevolverTodos()");
+        sb.AppendLine(@" {
 
             return _interfaz.DevolverTodos();
    }
@@ -302,13 +302,13 @@ namespace ClasesFrigo.Entidades
 
 
 
-    return sb.ToString();
-}
+        return sb.ToString();
+    }
 
-public string CreateController()
-{
-    StringBuilder sb = new();
-    sb.Append(@$"
+    public string CreateController()
+    {
+        StringBuilder sb = new();
+        sb.Append(@$"
     
 using Microsoft.AspNetCore.Mvc;
 using SistemaRI;
@@ -361,7 +361,63 @@ namespace APIFrigo.Controllers
 }}
 ");
 
-    return sb.ToString();
+        return sb.ToString();
+    }
+
+
+    public override string ToString()
+    {
+        string print = $@"
+
+
+                =================================== Entidad ==========================================
+
+{CreateTable()}
+
+                
+
+
+
+
+
+
+                =================================== Entidad Busqueda ========================================== 
+
+{CreateClassSearch()}
+
+
+
+
+
+
+
+                =================================== ORA ========================================================
+
+
+{CreateORAClass()}
+
+
+
+                =================================== BO ========================================================
+
+
+{CreateBOClass()}
+
+
+
+
+
+
+                =================================== Controller ========================================================
+
+
+
+{CreateController()}
+";
+
+
+        return print;
+    }
 }
 
-}
+
